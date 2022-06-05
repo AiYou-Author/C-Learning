@@ -9,12 +9,12 @@ int(*func)(intx,inty);
 ```c++
 #include<stdio.h>
 
-intadd(inta,intb)
+int add(inta,intb)
 {
 	return a+b;
 }
 
-intsub(inta,intb)
+int sub(inta,intb)
 {
 	return a-b;
 }
@@ -37,10 +37,10 @@ intmain()
 #### 2.指针函数
 
 ```c++
-int*func(inta,intb);
+int*func(int a,int b);
 ```
 
-普通函数就是intfunc(inta,intb);,返回值是int，而指针函数就是返回值是指针的函数，即返回值是int*。
+普通函数就是int func(int a,int b);,返回值是int，而指针函数就是返回值是指针的函数，即返回值是int*。
 
 
 
@@ -50,7 +50,7 @@ int*func(inta,intb);
 
 ```c++
 #pragmapack(n)//n=4,2,1
-structnode{undefined
+struct node{undefined
 int e;
 char f;
 short int a;
@@ -372,4 +372,153 @@ unsigned int q = (unsigned int)(&p->i));
 考点4：(char*)&a +q 先把a的地址转换成指向char型（即1个Byte）指针，然后指针往后移动q个Byte。
 所以最后得出的结果是a.i的值为-50。*/
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### [14.sizeof()和strlen()](https://blog.csdn.net/magic_world_wow/article/details/80500473)
+
+sizeof()计算的是分配空间的实际字节数。
+
+strlen()是计算的空间中字符的个数（不包括**‘\0’**）
+
+sizeof是在编译的时候就将结果计算出来了是类型所占空间的字节数，所以以数组名做参数时计算的是整个数组的大小。
+
+strlen是在运行的时候才开始计算结果，这是计算的结果不再是类型所占内存的大小，数组名就退化为指针了
+
+```
+char* s = "0123456789";
+sizeof(s);     //结果 4    ＝＝＝》s是指向字符串常量的字符指针
+sizeof(*s);    //结果 1    ＝＝＝》*s是第一个字符
+strlen(s);     //结果 10   ＝＝＝》有10个字符，strlen是个函数内部实现是用一个循环计算到\0为止之前
+strlen(*s);     //结果 10   ＝＝＝》错误
+
+
+char s[] = "0123456789";
+sizeof(s);     //结果 11   ＝＝＝》s是数组，计算到\0位置，因此是10＋1
+strlen(s);     //结果 10   ＝＝＝》有10个字符，strlen是个函数内部实现是用一个循环计算到\0为止之前
+sizeof(*s);    //结果 1    ＝＝＝》*s是第一个字符
+
+char s[100] = "0123456789";
+sizeof(s);     //结果是100 ＝＝＝》s表示在内存中的大小 100×1
+strlen(s);     //结果是10  ＝＝＝》strlen是个函数内部实现是用一个循环计算到\0为止之前
+
+int s[100] = "0123456789";
+sizeof(s);     //结果 400  ＝＝＝》s表示再内存中的大小 100×4
+strlen(s);     //错误      ＝＝＝》strlen的参数只能是char* 且必须是以‘\0‘结尾的
+
+char q[]="abc";
+char p[]="a\n";
+sizeof(q),sizeof(p),strlen(q),strlen(p);\\结果是 4 3 3 2
+
+char p[] = {'a','b','c','d','e','f','g','h'};
+char q[] = {'a','b','c','d,'\0','e','f','g'};
+sizeof(p);     //结果是8 ＝＝＝》p表示在内存中的大小 8×1
+strlen(p);     //为一个随机值，结果与编译器有关，不同编译器结果一般不同
+sizeof(q);     //结果是8 ＝＝＝》p表示在内存中的大小 8×1
+strlen(q);     //结果为4 ＝＝＝》存在'\0',遇到'\0'计算停止。
+```
+
+
+
+
+
+
+
+
+
+#### 15.数组指针与指针数组
+
+```c++
+int *p1[5]；
+int (*p2)[5]；
+```
+
+首先，对于语句int* p1[5]，因为“[]”的优先级要比“* ”要高，所以 p1 先与“[]”结合，构成一个数组的定义，数组名为 p1，而“int*”修饰的是数组的内容，即数组的每个元素。也就是说，该数组包含 5 个指向 int 类型数据的指针，如图 1 所示，因此，它是一个指针数组。
+
+![img](https://s2.loli.net/2022/06/04/MLN9lJYfv1ZKQF8.jpg)
+
+其次，对于语句“int(* p2)[5]”，“()”的优先级比“[]”高，“*”号和 p2 构成一个指针的定义，指针变量名为 p2，而 int 修饰的是数组的内容，即数组的每个元素。也就是说，p2 是一个指针，它指向一个包含 5 个 int 类型数据的数组，如图 2 所示。很显然，它是一个数组指针，数组在这里并没有名字，是个匿名数组。
+
+![img](https://s2.loli.net/2022/06/04/3zrp6cLPOMQqGF2.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
+
+#### 16.C++ lambda函数
+
+
+
+```c++
+int main()
+{
+    int a = 1;
+    int b = 2;
+    // 定义一个lambda函数
+    auto sum = [](int x, int y)->int{
+        return x + y;
+    };
+
+    std::cout << sum(a, b) << std::endl;   // 3
+
+    return 0;
+}
+```
+
+```c++
+[capture](parameters) mutable -> return-type{statement}
+```
+
+- [capture]，捕捉列表。捕捉列表总是在lambda函数的开始，[]是lambda函数的引出符。编译器根据该引出符确定接下来的代码是不是lambda函数。捕捉列表能够捕捉上下文中的变量以供lambda函数使用。下文会介绍捕捉的方法。
+- (parameters)，参数列表。和普通函数的参数列表一致，如果不需要参数可以连()一起省略。
+- mutable，一个修饰符。默认情况下，lambda函数总是一个const函数，mutable可以取消其常量性。在使用mutable时，参数列表不可省略，即使参数为空。
+- ->return-type，返回类型。用追踪返回类型声明函数的返回值。不需要返回值时，可以连同符号->一起省略。另外，在返回类型明确的情况下，也可以省略，让编译器推导出返回类型。
+- statement，函数体。与普通函数一样，但是可以使用捕捉列表中的变量。
+
+```c++
+int main()
+{
+    int a = 1;
+    int b = 2;
+
+    [] {};                             // 最简单
+    [=] {return a + b; };              // 省略了参数列表和返回值类型
+    auto func1 = [&](int c) {b = a + c; };    // 省略了返回值类型
+    auto func2 = [=, &b](int c)->int { return b += a + c; };  // 完整的lambda函数
+
+    return 0;
+}
+```
+
+
+
+捕捉列表的几种形式：
+
+- [var]表示以值传递的方式来捕捉变量var。
+- [=]表示以值传递的方式捕捉所有父作用域的变量，包括this指针。
+- [&var]表示引用传递捕捉变量var。
+- [&]表示引用传递捕捉所有父作用域的变量，包括this指针。
+- [this]表示值传递方式捕捉当前的this指针。
+- 以上的方式可以组合使用，但是不允许对同一个变量以同一方式重复捕捉。
+- 在块作用域(可以理解为在{}以内的代码)以外的lambda函数捕捉列表必须为空，这种lambda和普通函数除了语法上不同以外，和普通函数差别不大。在块作用域内的lambda函数只能捕捉父作用域中的自动变量，不能捕捉非此作用域的变量或者非自动变量(如静态变量等)。
+
+
 
