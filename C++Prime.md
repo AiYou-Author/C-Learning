@@ -2551,25 +2551,25 @@ Stock *pstock = new Stock("happy");
 
 #### 默认构造函数
 
-默认构造是在未提供显式初始值时，用来创造对象的构造函数
+**默认构造是在未提供显式初始值时，用来创造对象的构造函数**
 
 如果没有提供任何构造函数，编译器将会提供默认构造函数。然而如果提供了非默认构造函数（Stock(const char*co)）,但没有提供默认构造函数，则Stock stock1的声明将会出错。
 
-定义默认构造的方式有两种：
+**定义默认构造的方式有两种：**
 
-- 给已有构造函数的所有参数提供默认值
+- **给已有构造函数的所有参数提供默认值**
 
 ```c++
 Stock(const string & co = "Error" , int n = 0, double pr = 0.0);
 ```
 
-- 通过函数重载来定义构造没有参数的构造函数
+- **通过函数重载来定义构造没有参数的构造函数**
 
 ```
 Stock();
 ```
 
-由于只有一个默认构造函数，因此不要同时采用两种方式
+**由于只有一个默认构造函数，因此不要同时采用两种方式**
 
 ```c++
 //使用默认构造，声明对象变量
@@ -2631,7 +2631,7 @@ const Stock land = Stock("happy");
 land.show(); 	//failed
 ```
 
-show()的代码无法确保调用对象不被修改
+**show()的代码无法确保调用对象不被修改**
 
 解决方法：将const关键字放在函数的括号后面
 
@@ -2711,7 +2711,7 @@ Stock stock[STKS] =
 
 
 
-使用类成员名时，必须根据上下文使用直接成员运算符(.)、间接成员运算符(->)或作用域解析运算符(::)
+使用类成员名时，必须根据上下文使用**直接成员运算符(.)**、**间接成员运算符(->)**或**作用域解析运算符(::)**
 
 
 
@@ -2731,7 +2731,7 @@ private:
 
 改进方法如下：
 
-- 声明一个枚举。在类声明中的枚举作用域为整个类
+- 声明一个枚举。**在类声明中的枚举作用域为整个类**
 
 ```c++
 class Bakery
@@ -2743,7 +2743,7 @@ private:
 }
 ```
 
-- 使用关键字static,将该常量与其他静态变量存储在一起，一个Months常量被所有Bakery对象共享
+- **使用关键字static,**将该常量与其他静态变量存储在一起，一个Months常量被所有Bakery对象共享
 
 ```c++
 class Bakery
@@ -2977,9 +2977,22 @@ t4=t1.operator+(t2.operator+(t3));
 
 不能创建新运算符
 
+不能重载的运算符：
+
+- sizeof:sizeof运算符.
+- :成员运算符。
+- .*:成员指针运算符。
+- :作用域解析运算符。
+- ?:条件运算符。
+- typeid:一个RTTI运算符。
+- const cast:强制类型转换运算符。
+- dynamic_cast:强制类型转换运算符.
+- reinterpret_cast:强制类型转换运算符。
+- static_cast:强制类型转换运算符。
+
 **某些运算符只能通过成员函数进行重载： =  （） [ ]  ->**
 
-han
+
 
 
 
@@ -3049,9 +3062,10 @@ cout << tirp;
 ```c++
 //通过友元函数重载运算符
 //cout实质是ostream的一个对象
-void operator << (ostream & os,const Time &t)
+ostream & operator << (ostream & os,const Time &t)
 {
 	os<<t.hours<<"hours"<<t.minutes<<"minutes";
+    return os;
 }
 ```
 
@@ -3069,6 +3083,7 @@ ostream类将operator<<()函数实现返回一个指向ostream对象的引用
 ostream & operator << (ostream & os,const Time &t)
 {
 	os<<t.hours<<"hours"<<t.minutes<<"minutes";
+    ret
 }
 ```
 
