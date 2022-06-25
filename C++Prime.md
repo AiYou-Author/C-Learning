@@ -3281,9 +3281,9 @@ public:
 #endif
 ```
 
-使用char指针表示姓名，意味着没有为字符串本身分配存储空间，需在构造函数总使用new来为字符串分配空间。
+**使用char指针表示姓名，意味着没有为字符串本身分配存储空间，需在构造函数总使用new来为字符串分配空间。**
 
-num_strings成员为静态存储类。无论创建多少个对象，只创建一个静态类变量副本。所有对象共用一个静态成员。
+num_strings成员为静态存储类。无论创建多少个对象，**只创建一个静态类变量副本**。**所有对象共用一个静态成员。**
 
 ```c++
 //stringbad.cpp
@@ -3320,7 +3320,7 @@ std::ostream & operator<<(std::ostream &os,StringBad & st)
 }
 ```
 
-- 静态成员num_strings的值初始化为0.一般是需要在类声明之外使用单独的语句来进行初始化。初始化是在方法文件中，而不是在类声明中进行的。
+- **静态成员**num_strings的值初始化为0.**一般是需要在类声明之外使用单独的语句来进行初始化。初始化是在方法文件中，而不是在类声明中进行的。**
 - 某些例外（静态成员是整型或枚举型const），则可以在类声明中初始化
 
 ```c++
@@ -3370,8 +3370,8 @@ StringBad *pStringBad = new StringBad(motoo);
 
 当函数按值传递对象或函数返回对象是，都将使用拷贝构造函数
 
-- 默认的拷贝构造函数逐个复制非静态成员（成员复制也称为浅复制），对于某些使用new初始化的指针成员，仅能复制指向字符串的指针。
-- 深度赋值（显示拷贝构造）：拷贝构造函数应当复制字符串并将副本的地址赋给str成员，而不仅仅是复制字符串的地址。
+- **默认的拷贝构造函数逐个复制非静态成员（**成员复制也称为浅复制），**对于某些使用new初始化的指针成员，仅能复制指向字符串的指针。**
+- **深度赋值（显示拷贝构造）**：拷贝构造函数应当复制字符串并将副本的地址赋给str成员，而不仅仅是复制字符串的地址。
 
 ```c++
 StringBad::StringBad(const StringBad&st)
@@ -3497,7 +3497,7 @@ city[0] = 'r';
 city.operator[0] = 'r';
 ```
 
-常量对象。无法使用operator[]()访问对象，不能确保不修改数据
+常量对象。无法使用`operator[]()`访问对象，不能确保不修改数据
 
 ```c++
 const String answer("futile");
@@ -3528,7 +3528,7 @@ const char & String::operator[](int i) const
   int count = String::HowMany();
   ```
 
-- 静态成员函数只能使用静态数据成员
+- **静态成员函数只能使用静态数据成员**
 
 
 
@@ -3543,9 +3543,9 @@ const char & String::operator[](int i) const
 
 
 - new和delete必须兼容，new对应于delete，new[]对应与delete[]
-- 如果有多个构造函数，则必须以相同的方式使用new
-- 复制构造函数，深度复制，不仅仅是数据的地址
-- 赋值运算符，深度复制
+- **如果有多个构造函数，则必须以相同的方式使用new**
+- **复制构造函数，深度复制**，不仅仅是数据的地址
+- **赋值运算符，深度复制**
 
 
 
@@ -3573,7 +3573,7 @@ const Vector & Max(const Vector &v1,const Vector &v2)
 }
 ```
 
-由于v1，v2都被声明为const引用，因此返回类型必须为const
+**由于v1，v2都被声明为const引用，因此返回类型必须为const**
 
 
 
@@ -3639,7 +3639,7 @@ delete pc2;
 delete [] buffer;
 ```
 
-使用new运算符创建512字节的内存缓冲区，使用定位new运算符在缓冲区中创建两个JustTesting对象
+**使用new运算符创建512字节的内存缓冲区，使用定位new运算符在缓冲区中创建两个JustTesting对象**
 
 
 
@@ -3647,14 +3647,14 @@ delete [] buffer;
 
 ```c++
 pc1 = new(buffer) JustTesting;
-pc2 = new(buffer+sizeof(JustTesting)) JustTesting("Better",6);
+pc3 = new(buffer+sizeof(JustTesting)) JustTesting("Better",6);
 ```
 
-delete可以与常规new运算符配合使用，但不能与定位new运算符配合使用
+**delete可以与常规new运算符配合使用，但不能与定位new运算符配合使用**
 
-delet[]buffer释放了整个内存块，但是没有为定位new运算符在该内存块创建的对象调用析构函数。
+**delete[]buffer释放了整个内存块**，**但是没有为定位new运算符在该内存块创建的对象调用析构函数。**
 
-需要显式的定位new运算符创建的对象调用析构函数
+**需要显式的定位new运算符创建的对象调用析构函数**
 
 ```c++
 pc3->~JustTesting();
@@ -3689,7 +3689,7 @@ private:
 
 #### 嵌套结构和类
 
-类声明中声明的结构，类，或枚举被称为嵌套在类中，其作用域为整个类。
+**类声明中声明的结构，类，或枚举被称为嵌套在类中，其作用域为整个类。**
 
 如果为私有部分只能在类中使用。
 
@@ -3699,7 +3699,7 @@ private:
 
 #### 成员初始化列表
 
-qsize为常量，可以对其进行初始化，但是不能给它赋值
+**qsize为常量，可以对其进行初始化**，但是不能给它赋值
 
 ```c++
 Queue::Queue(int qs):qsize(qs),front(nullptr),rear(nullptr),items(0)
@@ -3707,8 +3707,8 @@ Queue::Queue(int qs):qsize(qs),front(nullptr),rear(nullptr),items(0)
 }
 ```
 
-- 对于const类成员，必须使用初始化列表。
-- 对于声明为引用的类成员，必须使用初始化列表。
+- 对于**const类成员**，必须使用初始化列表。
+- 对于**声明为引用的类成员**，必须使用初始化列表。
 - 仅适用于构造函数
 
 ```c++
