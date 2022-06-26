@@ -4388,7 +4388,7 @@ valarray<double> weights;
 
 #### C++和约束
 
-C++包含让程序员能够限制程序结构的特性--使用explicit防止单参数构造函数的隐式转换，使用const限制方法修改数据
+C++包含让程序员能够限制程序结构的特性--**使用explicit防止单参数构造函数的隐式转换**，**使用const限制方法修改数据**
 
 ```c++
 class Student
@@ -4469,7 +4469,7 @@ double Student::Average() const
 
 Student类的代码如何访问内部的string对象。
 
-使用强制类型转换。通过强制类型转换将student对象转换为string对象
+使用强制类型转换。**通过强制类型转换将student对象转换为string对象**
 
 ```c++
 const string & Student::Name() const
