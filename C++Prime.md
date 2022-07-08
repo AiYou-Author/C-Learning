@@ -3467,7 +3467,7 @@ StringBad::StringBad(const StringBad&st)
 	num_string++;
 	len = st.len;
 	str = new char[len+1];
-	std::strcpy(str,st.str);
+	std::strcpy(str,st.str());
 }
 ```
 
@@ -5259,7 +5259,7 @@ C++11允许将using=用于非模板，等价于typedef
 
 
 
-w
+
 
 ### 15.1 友元
 
@@ -5485,11 +5485,32 @@ Team::Coach forhire;
 
   
 
-dynamic_cast能够在类层次结构中进行向上转换
+**dynamic_cast**能够在类层次结构中进行向上转换
 
-```
+dynamic_cast主要用于类层次间的**上行转换**和**下行转换**，还可以用于**类之间的交叉转换**（cross cast）。
+
+上行转换时和static_cast效果一样，下行转换时，具有检测功能，比static_cast更安全。
+
+type_id必须是**类的指针，类的引用或者空类型的指针**，expression必须也是相对应的类型。
+
+如果转换目标是指针类型并且失败了，则结果为0。
+
+如果转换目标是引用类型并且失败了，则dynamic_cast运算符将抛出一个std::bad_cast异常
+
+```c++
 dynamic_cast<type-name>(expression);
+//expression转换成type_name类型的对象。type_name必须是类的指针，类的引用或者空类型的指针。
 ```
+
+a、如果type_id是一个指针类型，那么expression也必须是一个指针类型，如果type_id是一个引用类型，那么expression也必须是一个引用类型。
+
+b、如果type_id是一个空类型的指针，在运行的时候，就会检测expression的实际类型，结果是一个由expression决定的指针类型。
+
+c、如果type_id不是空类型的指针，在运行的时候指向expression对象的指针能否可以转换成type_id类型的指针。
+
+d、在运行的时候决定真正的类型，如果向下转换是安全的，就返回一个转换后的指针，若不安全，则返回一个空指针。
+
+e、主要用于上下行之间的转换，也可以用于类之间的交叉转换。上行转换时和static_cast效果一样，下行转换时，具有检测功能，比static_cast更安全
 
 ```c++
 High* ph;
@@ -5499,10 +5520,18 @@ pl=dynamic_cast<Low*>ph;//仅当Low是High可访问的基类，才能赋值，�
 
 
 
-const_cast运算符用于执行const或volatile转换,也就是将const改为非const
+**const_cast**运算符用于执行const或volatile转换,也就是将const改为非const
+
+const_case只能转换**指针或引用** 不能转换变量
+
+去掉const属性：`const_case<int*> (&num)`，常用，因为**不能把一个const变量直接赋给一个非const变量，必须要转换。**
 
 ```c++
+//const_cast中的类型必须是引用或者指针
 const_cast<type-name>(expression);
+const int a = 5;
+int r = const_cast<int&>(a);
+int *r= const_cast<int*>(a);
 ```
 
 type-name和expression的类型相同
@@ -5518,7 +5547,39 @@ const Low*pl=const_cast<const Low*>(pbar);//invalid;
 
 
 
-static_cast可以进行向上转换或者向下转换
+**static_cast< new_type >(expression)**
+
+静态转换，在编译处理阶段
+
+用于C++内置的基本数据类型转换，将expression转换为new_type,但是不能保证转换的安全性
+
+- ①用于类层次结构中基类（父类）和派生类（子类）之间指针或引用的转换。
+
+  进行上行转换（把派生类的指针或引用转换成基类表示）是安全的；
+
+  进行下行转换（把基类指针或引用转换成派生类表示）时，由于没有动态类型检查，所以是不安全的。
+
+- ②用于基本数据类型之间的转换，如把int转换成char，把int转换成enum。
+
+- ③把空指针转换成目标类型的空指针。
+
+- ④把任何类型的表达式转换成void类型。
+
+  注意：static_cast不能转换掉expression的const、volatile、或者__unaligned属性
+
+```c++
+char a = 'a';
+int b = static_cast<int>(a);//正确，将char型数据转换成int型数据
+
+double *c = new double;
+void *d = static_cast<void*>(c);//正确，将double指针转换成void指针
+
+int e = 10;
+const int f = static_cast<const int>(e);//正确，将int型数据转换成const int型数据
+
+const int g = 20;
+int *h = static_cast<int*>(&g);//编译错误，static_cast不能转换掉g的const属性
+```
 
 ```c++
 High bar;
@@ -5567,7 +5628,7 @@ cout<<four<<endl;		//<<
 cout<<five[4];			//[]
 ```
 
-```
+```c++
 char alls[]="All's well that ends well";
 string five(alls,20);
 ```
@@ -5741,7 +5802,7 @@ string vaction("I wanted!");
 shared_ptr<string> pvac(&vacation);//no
 ```
 
-delete运算符用于非堆内存这是错误的
+**delete运算符用于非堆内存这是错误的**
 
 
 
@@ -5751,7 +5812,7 @@ auto_ptr<string> vocation;
 vocation=ps;
 ```
 
-auto_ptr和unique_ptr在出现赋值语句时，会转让所有权
+**auto_ptr和unique_ptr在出现赋值语句时，会转让所有权**
 
 赋值操作转让所有权的unique_ptr指针
 
@@ -5787,7 +5848,7 @@ pwin=films[2];
 
 #### unique_ptr与auto_ptr
 
-unique_ptr比auto_ptr更安全，编译阶段就会报错
+**unique_ptr比auto_ptr更安全，编译阶段就会报错**
 
 对于一个函数返回一个临时的unique_ptr，然后赋给一个新的unique_ptr，则返回的unique_ptr会被销毁。
 
@@ -5809,9 +5870,9 @@ unique_ptr<string> pu2;
 pu2 = move(pu1);	//allowed;
 ```
 
-相比auto_ptr，unique_ptr可用于数组的变体
+**相比auto_ptr，unique_ptr可用于数组的变体**
 
-auto_ptr使用delete而不是delete[]，只能与new一起使用。而unique_ptr有使用new[]和delete[]版本
+**auto_ptr使用delete而不是delete[]，只能与new一起使用。而unique_ptr有使用new[]和delete[]版本**
 
 ```c++
 unique_ptr<double[]> pda(new double(5));
@@ -5827,7 +5888,7 @@ unique_ptr<double[]> pda(new double(5));
 
 如果不需要多个指向同一对象的指针，则可以使用unique_ptr;
 
-shared_ptr包含一个显式构造函数，可用于将右值unique_ptr转换为shared_ptr;
+**shared_ptr包含一个显式构造函数，可用于将右值unique_ptr转换为shared_ptr;**
 
 
 
@@ -5864,7 +5925,7 @@ auto pd = scores.begin();
 - insert()，第一个参数指定新元素插入的位置，第二个和第三定义了被插入区间
 
   ```c++
-  old_v.insert(old_v.begin,new_v.begin()+1,new_v.end());
+  old_v.insert(old_v.begin(),new_v.begin()+1,new_v.end());
   ```
 
   
@@ -5873,7 +5934,7 @@ auto pd = scores.begin();
 
 for_each(),random_shuffle()和sort()
 
-for_each()函数可用于很多容器，接收3个参数。前两个容器区间的迭代器，最后一个是指向函数的指针（最后一个参数是一个函数对象）
+for_each()函数可用于很多容器，接收3个参数。前两个容器区间的迭代器，最后一个是指向函数的指针（**最后一个参数是一个函数对象**）
 
 ```c++
 for(auto pr=books.begin();pr!=books.end();pr++)
@@ -5890,7 +5951,7 @@ randmo_shuffle()随机排列books矢量中的所有元素
 randmo_shuffle(books.begin(),books.end());
 ```
 
-sort()如果容器元素是用户定义的对象，需要定义能够处理该对象的operator<()函数
+**sort()如果容器元素是用户定义的对象，需要定义能够处理该对象的operator<()函数**
 
 
 
@@ -6054,11 +6115,11 @@ const int*ptr1;
 
 
 
-每个容器类都定义了个类级迭代器。例如vector<int>类的迭代器vector<int>::iterator
+每个容器类都定义了个类级迭代器。例如`vector<int>`类的迭代器`vector<int>::iterator`
 
 矢量迭代器是随机访问迭代器。
 
-list<int>的迭代器是双向链表，他使用双向迭代器不支持随机访问
+`list<int>`的迭代器是双向链表，他使用双向迭代器不支持随机访问
 
 
 
@@ -6096,14 +6157,16 @@ vector<int> dice[10];
 copy(casts,casts+10,dice.begin());
 ```
 
-copy()的前两个选代器参数表示要复制的范围,最后一个迭代器参数表示要将第一个元素复制到什么位置。前两个参数必须是(或最好是)输入选代器,最后一个参数必须是(或最好是)输出选代器。Copy()函数将覆盖目标容器中已有的数据,同时目标容器必须足够大,以便能够容纳被复制的元素。因此,不能,使用copy()将数据放到空矢量中。
+**copy()的前两个选代器参数表示要复制的范围,最后一个迭代器参数表示要将第一个元素复制到什么位置**。前两个参数必须是(或最好是)输入选代器,最后一个参数必须是(或最好是)输出选代器。Copy()函数将覆盖目标容器中已有的数据,同时目标容器必须足够大,以便能够容纳被复制的元素。因此,不能,使用copy()将数据放到空矢量中。
 
 ```c++
 #include <iterator>
 ostream_iterator<int,char>out_iter(cout," ");
 ```
 
-第一个模板参数指出被发送给输出流的数据类型，第二个模板参数指出了输出流使用的字符类型构造函数第一个参数cout指出了使用的输出流，第二个参数是发送给输出流每个数据项后的分隔符
+第一个模板参数指出被发送给输出流的数据类型，第二个模板参数指出了输出流使用的字符类型
+
+构造函数第一个参数cout指出了使用的输出流，第二个参数是发送给输出流每个数据项后的分隔符
 
 ```c++
 *out_iter++ = 15;//works like cout << 15 <<" ";
@@ -6147,11 +6210,11 @@ for(ri=dice.regin();ri!=dice.rend();++ri)
 
 
 
-back_insert_iterator将元素插入到容器尾部
+**back_insert_iterator将元素插入到容器尾部**
 
-front_insert_iterator将容器插入到容器的前端
+**front_insert_iterator将容器插入到容器的前端**
 
-insert_iterator将元素插入到insert_iterator构造函数的参数指定的位置前面
+**insert_iterator将元素插入到insert_iterator构造函数的参数指定的位置前面**
 
 这些迭代器将容器类型作为模板参数，将实际的容器标识符作为构造函数参数
 
@@ -6188,6 +6251,16 @@ deque	list	queue	priority_queue	stack	vector	map	multimap	set	multiset
 
 类型必须是可复制构造的和可赋值的对象才可以存储在容器中![image-20220418202140118](https://s2.loli.net/2022/05/06/I2ULEFwpBGr4z6W.png)![image-20220418202247874](https://s2.loli.net/2022/05/06/qcD8uf5BGdxmNXs.png)
 
+```
+list<int> l;
+list<int> r;
+l.sort();
+r.sort();
+l.merge(r);
+l.remove(1);
+l.unique();
+```
+
 
 
 ##### 序列
@@ -6198,9 +6271,9 @@ deque	list	queue	priority_queue	stack	vector	map	multimap	set	multiset
 
 ![image-20220418203735184](https://s2.loli.net/2022/05/06/WJ3jZgdLnRUGAyO.png)
 
-![image-20220418203127195](https://s2.loli.net/2022/05/06/XfGaKVA1Nz5CQYv.png)
 
-如果n落在容器的有效区间外，则a.at(n)将执行边界检查，引发out_of_range异常
+
+**如果n落在容器的有效区间外，则a.at(n)将执行边界检查，引发out_of_range异常**
 
 
 
@@ -6224,7 +6297,7 @@ list和vector在链表中任意位置进行插入和删除的时间都是固定�
 
 vector可以进行随机访问而list强调元素的快速插入和删除
 
-![image-20220418203604483](C:\Users\AiYou_\AppData\Roaming\Typora\typora-user-images\image-20220418203604483.png)
+![image-20220418203604483](https://s2.loli.net/2022/07/08/vRCEbcU4zf6taZF.png)
 
 ```c++
 list<int> one(5,2);
@@ -6255,7 +6328,7 @@ three.merge(two);//将两个排序后的链表合并
 
 不支持随机访问队列元素，不允许遍历队列，可以将元素插入队尾，从队首删除元素，查看队首和队尾的值，检查元素数目和测试队列是否为空
 
-![image-20220418211633848](C:\Users\AiYou_\AppData\Roaming\Typora\typora-user-images\image-20220418211633848.png)
+![image-20220418211633848](https://s2.loli.net/2022/07/08/enL4mGblwhaUcES.png)
 
 ###### priority_queue
 
@@ -6287,6 +6360,8 @@ priority_queue <int,vector<int>,less<int> >q;
 
 
 ###### stack
+
+![image-20220418203127195](https://s2.loli.net/2022/05/06/XfGaKVA1Nz5CQYv.png)
 
 ###### stack![image-20220418212100767](https://s2.loli.net/2022/05/06/f8rsuhzOYjvqtm1.png)
 
@@ -6476,7 +6551,7 @@ scores.remove_if(TooBig<int>(200));//删除大于200的值
 
 
 
-可以使用初始化列表来简化初始化
+**可以使用初始化列表来简化初始化**
 
 ```c++
 int vals[10]={50,100,90,180,...};
@@ -6492,7 +6567,7 @@ list<int> yada={50,100,90,180,...};
 
 #### 16.5.2 预定义的函数符
 
-###### transform()
+##### **transform()**
 
 ```c++
 //函数符是单个参数的函数符
@@ -6518,7 +6593,7 @@ transfrom(gre.begin(),gre.end(),gre1.begin(),out,add);
 
 
 
-###### plus<>双参数加法函数符
+##### plus<>双参数加法函数符
 
 ```c++
 plus<double> add;
@@ -6771,7 +6846,7 @@ valarray定义了和单个int元素定义了运算符+
 
 #### 16.7.2 模板initializer_list
 
-容器类将initializer_list<T>作为参数的构造函数
+**容器类将`initializer_list<T>`作为参数的构造函数**
 
 ```c++
 vector<double> payments{15.99,12.55,13.66,42.55};
