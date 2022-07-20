@@ -6598,7 +6598,7 @@ transfrom(gre.begin(),gre.end(),gre1.begin(),out,add);
 ```c++
 plus<double> add;
 transfrom(gre.begin(),gre.end(),gre1.begin(),out,add);
-transfrom(gre.begin(),gre.end(),gre1.begin(),out,plus<doubel>());
+transfrom(gre.begin(),gre.end(),gre1.begin(),out,plus<double>());
 ```
 
 
